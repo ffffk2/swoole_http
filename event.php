@@ -22,7 +22,9 @@ $_request = function ($request, $response)use($route){
         } else {
             $class = 'app\\' . $module . '\\controller\\' . $controller;
             if (class_exists($class)) {
-                $obj = new $class($request, $response);
+                core\Request::$request = $request;
+                core\Response::$response = $response;
+                $obj = new $class();
                 $obj->$action();
             } else {
                 $response->end($class . '不存在');

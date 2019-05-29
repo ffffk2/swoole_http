@@ -3,6 +3,8 @@
 namespace core;
 
 use core\pool\Pool;
+use core\Request;
+use core\Response;
 
 class Controller{
 
@@ -12,9 +14,9 @@ class Controller{
 
     public $pool = [];
 
-    public function __construct($request, $response){
-        $this->request = $request;
-        $this->response = $response;
+    public function __construct(){
+        $this->request = Request::$request;
+        $this->response = Response::$response;
         $this->init();
     }
 
@@ -49,7 +51,15 @@ class Controller{
     public function input($index = ''){
         # 获取所有
         if (empty($index)){
-            $param = array_merge($this->request->get, $this->request->post);
+            if ($this->request->get && $this->request->post) {
+                $param = array_merge($this->request->get, $this->request->post);
+            }else if(!$this->request_get && $this->request->post){
+                $param = $this->request->post;
+            }else if($this->request_get && !$this->request->post){
+                $param = $this->request->get;
+            }else{
+                $param = null;
+            }
         }else{
             $index = explode('.', $index);
             if (in_array(strtolower($index[0]), ['get', 'post'])){

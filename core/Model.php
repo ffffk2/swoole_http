@@ -26,6 +26,8 @@ class Model{
 
 	protected $sql = '';
 
+    protected $pk = 'id';
+
 	public function __construct($name = 'mysql'){
 		// 获取连接池对象
 		$this->mysql = Pool::getObj($name);
@@ -80,13 +82,13 @@ class Model{
         if ($this->name){
             $sql .= ' as ' . $this->name;
         }
-        if ($this->where){
-            $sql .= " where {$this->where}";
-        }
         if ($this->join){
             foreach ($this->join as $join) {
                 $sql .= ' '.$join;
             }
+        }
+        if ($this->where){
+            $sql .= " where {$this->where}";
         }
         if ($this->group){
             $sql .= " group by {$this->group}";
@@ -144,17 +146,22 @@ class Model{
         if (is_array($where)){
             $where_arr = [];
             foreach ($where as $key => $value) {
+                $key = explode('.', $key);
+                foreach ($key as &$k) {
+                    $k = '`'.trim($k).'`';
+                }
+                $key = implode('.', $key);
                 if (is_array($value)){
                     if ($value[0] == 'in' && is_string($value[1])){
-                        $where_arr[] = "`{$key}` {$value[0]} ({$value[1]})";
+                        $where_arr[] = "{$key} {$value[0]} ({$value[1]})";
                     }else if($value[0] == 'in' && is_array($value[1])){
                         $value[1] = implode(',', $value[1]);
-                        $where_arr[] = "`{$key}` {$value[0]} ({$value[1]})";
+                        $where_arr[] = "{$key} {$value[0]} ({$value[1]})";
                     }else{
-                        $where_arr[] = "`{$key}` {$value[0]} '{$value[1]}'";
+                        $where_arr[] = "{$key} {$value[0]} '{$value[1]}'";
                     }
                 }else{
-                    $where_arr[] = "`{$key}` = '{$value}'";
+                    $where_arr[] = "{$key} = '{$value}'";
                 }
             }
             $this->where = implode(' and ', $where_arr);
