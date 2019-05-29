@@ -1,0 +1,12 @@
+{
+    "name": "zjf/sf",
+    "description": "尝试做",
+    "require": {},
+    "autoload":{
+    	"psr-4":{
+	        "app\\": "app/",
+			"core\\": "core/",
+			"tool\\": "tool/"
+    	}
+    }
+}
