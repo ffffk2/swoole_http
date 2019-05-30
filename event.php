@@ -22,6 +22,9 @@ $_request = function ($request, $response)use($route){
         } else {
             $class = 'app\\' . $module . '\\controller\\' . $controller;
             if (class_exists($class)) {
+                $request->server['module'] = $module;
+                $request->server['controller'] = $controller;
+                $request->server['action'] = $action;
                 core\Request::$request = $request;
                 core\Response::$response = $response;
                 $obj = new $class();
@@ -36,8 +39,6 @@ $_request = function ($request, $response)use($route){
     } catch (\Exception $e) {
         $response->end($e->getMessage());
     }
-    $request = null;
-    $response = null;
 };
 
 $_WorkerStart = function($server, $worker_id){

@@ -35,16 +35,13 @@ abstract class PoolAbstract{
 	
 	# 获取对象
 	public function get(){
-		$obj = $this->chan->pop(2);
-		if ($obj->connected !== true) {
-			$this->num--;
-			if($this->num < $this->config['min']){
-				$this->create_obj();
-			}
-            return $this->get();
-        }else{
-            return $obj;
-        }
+		$this->num--;
+		if($this->num < $this->config['min']){
+			$obj = $this->create_obj();
+		}else{
+			$obj = $this->chan->pop(2);
+		}
+        return $obj;
 		
 	}
 	

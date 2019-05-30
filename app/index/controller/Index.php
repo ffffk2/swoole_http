@@ -8,7 +8,7 @@ class Index
 {
     public function index()
     {
-        $res = model('student')->select();
+        $res = model('Student')->limit(10)->select();
         Response::$response->end(json_encode($res));
     }
 
