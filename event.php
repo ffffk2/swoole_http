@@ -25,6 +25,9 @@ $_request = function ($request, $response)use($route){
                 core\Request::$request = $request;
                 core\Response::$response = $response;
                 $obj = new $class();
+                if(!method_exists($obj, $action)){
+                    throw new Swoole\ExitException($class . '@' . $action . '不存在');
+                }
                 $obj->$action();
             } else {
                 $response->end($class . '不存在');
@@ -33,6 +36,8 @@ $_request = function ($request, $response)use($route){
     } catch (\Exception $e) {
         $response->end($e->getMessage());
     }
+    $request = null;
+    $response = null;
 };
 
 $_WorkerStart = function($server, $worker_id){

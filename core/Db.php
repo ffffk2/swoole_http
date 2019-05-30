@@ -4,7 +4,7 @@ namespace core;
 
 use core\pool\Pool;
 
-class Model{
+class Db{
 
 	protected $mysql = null;
 
@@ -34,32 +34,38 @@ class Model{
 		// 获取连接池对象
 		$this->mysql = Pool::getObj($name);
         self::$prefix = config('mysql.prefix');
-        $this->table = self::$prefix . $this->table;
 	}
 
-    public function insert($data){
-        $field = implode(',', array_keys($data));
-        $value = array_values($data);
+    public static function name($table){
+        // 实例化对象
+        $obj = new Db();
+        $obj->table = self::$prefix . $table;
+        return $obj;
+    }
+
+	public function insert($data){
+	    $field = implode(',', array_keys($data));
+	    $value = array_values($data);
         foreach ($value as &$item) {
             $item = "'{$item}'";
-        }
-        $value = implode(',', $value);
+	    }
+	    $value = implode(',', $value);
         $sql = 'insert into ' . $this->table . ' (' . $field . ') value (' . $value . ')';
         $res = $this->mysql->query($sql);
         return $this->result($res);
-    }
+	}
 
-    public function insertGetId($data){
-        $res = $this->insert($data);
-        if ($res){
-            $id = $this->order($this->pk . ' desc')->find();
-            return $id[$this->pk];
-        }else{
-            return $res;
+	public function insertGetId($data){
+	    $res = $this->insert($data);
+	    if ($res){
+	        $id = $this->order($this->pk . ' desc')->find();
+	        return $id[$this->pk];
+	    }else{
+	        return $res;
         }
-    }
+	}
 
-    public function update($data){
+	public function update($data){
         $field = array_keys($data);
         $value = array_values($data);
         $data_arr = [];
@@ -70,13 +76,13 @@ class Model{
         $sql = 'update `' . $this->table . '` set ' . $data_str . ' where ' . $this->where;
         $res = $this->mysql->query($sql);
         return $this->result($res);
-    }
+	}
 
-    public function delete(){
+	public function delete(){
 
-    }
+	}
 
-    public function find(){
+	public function find(){
         $sql = 'select';
         if ($this->field){
            $sql .= ' ' . $this->field . ' from `' . $this->table . '`';
@@ -112,9 +118,9 @@ class Model{
         }else{
             throw new \Swoole\ExitException($this->mysql->error.PHP_EOL.' sql:'.$this->sql);
         }
-    }
+	}
 
-    public function select(){
+	public function select(){
         $sql = 'select';
         if ($this->field){
             $sql .= ' ' . $this->field . ' from ' . $this->table;
@@ -144,7 +150,7 @@ class Model{
         $this->sql = $sql;
         $res = $this->mysql->query($sql);
         return $this->result($res);
-    }
+	}
 
     public function count(){
         
@@ -175,7 +181,7 @@ class Model{
         return $this->result($res);
     }
 
-    public function where($where){
+	public function where($where){
         if (is_array($where)){
             $where_arr = [];
             foreach ($where as $key => $value) {
@@ -202,75 +208,75 @@ class Model{
             $this->where = $where;
         }
         return $this;
+	}
+
+	public function alias($name){
+	    $this->name = $name;
+	    return $this;
     }
 
-    public function alias($name){
-        $this->name = $name;
-        return $this;
-    }
-
-    public function order($order){
+	public function order($order){
         $this->order = $order;
         return $this;
-    }
+	}
 
-    public function group($group){
+	public function group($group){
         $this->group = $group;
         return $this;
-    }
+	}
 
-    public function field($field){
+	public function field($field){
         $this->field = $field;
         return $this;
-    }
+	}
 
-    public function join($table, $on, $type = 'inner'){
+	public function join($table, $on, $type = 'inner'){
         $join = $type . ' join ' . $table . ' on ' . $on;
         $this->join[] = $join;
         return $this;
-    }
+	}
 
-    public function query($sql){
+	public function query($sql){
         $res = $this->mysql->query($sql);
         if ($res){
             return true;
         }else{
             return_msg($this->mysql->error);
         }
-    }
+	}
 
-    public function limit($limit){
+	public function limit($limit){
         $this->limit = $limit;
         return $this;
-    }
+	}
 
-    public function page($page, $size){
+	public function page($page, $size){
         $start = ($page - 1) * $size;
         $this->limit = "{$start}, {$size}";
         return $this;
-    }
+	}
 
-    public function __destruct(){
-        Pool::freeObj('mysql', $this->mysql);
+	public function __destruct(){
+	    Pool::freeObj('mysql', $this->mysql);
     }
 
     public function result($res){
-        if ($res !== false){
-            return $res;
-        }else{
+	    if ($res !== false){
+	        return $res;
+	    }else{
             throw new \Swoole\ExitException($this->mysql->error.PHP_EOL.' sql:'.$this->sql);
         }
     }
 
-    public function begin(){
+    public static function begin(){
         $this->mysql->begin();
     }
 
-    public function commit(){
+    public static function commit(){
         $this->mysql->commit();
     }
 
-    public function rollback(){
+    public static function rollback(){
         $this->mysql->rollback();
     }
 }

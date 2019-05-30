@@ -53,9 +53,9 @@ class Controller{
         if (empty($index)){
             if ($this->request->get && $this->request->post) {
                 $param = array_merge($this->request->get, $this->request->post);
-            }else if(!$this->request_get && $this->request->post){
+            }else if(!$this->request->get && $this->request->post){
                 $param = $this->request->post;
-            }else if($this->request_get && !$this->request->post){
+            }else if($this->request->get && !$this->request->post){
                 $param = $this->request->get;
             }else{
                 $param = null;
