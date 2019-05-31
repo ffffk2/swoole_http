@@ -257,16 +257,15 @@ function check_sign($data, $sign)
  */
 function create_callback($data)
 {
-//    $data['time'] = date('Y-m-d H:i:s');
-//    $sign = create_sign($data);
-//    $data = base64_encode(json_encode($data));
-//    $json = array(
-//        'data' => $data,
-//        'sign' => $sign
-//    );
-//    $json = json_encode($json);
-//    return $json;
-    return json($data);
+   $data['time'] = date('Y-m-d H:i:s');
+   $sign = create_sign($data);
+   $data = base64_encode(json_encode($data));
+   $json = array(
+       'data' => $data,
+       'sign' => $sign
+   );
+   $json = json_encode($json);
+   return $json;
 }
 
 /**

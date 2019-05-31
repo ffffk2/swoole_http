@@ -1,15 +1,11 @@
 <?php
-
 namespace app\index\controller;
-use core\Db;
-use core\Response;
 
 class Index
 {
     public function index()
     {
-        $res = model('Student')->limit(10)->select();
-        Response::$response->end(json_encode($res));
+        
     }
 
     public function course_api()
