@@ -19,7 +19,8 @@ function config($name = ''){
 }
 
 # json格式exit
-function return_exit($msg = '未知错误', $code = 500){
+function return_json($msg = '未知错误', $code = 500){
+    core\Response::$response->status($code);
     throw new Swoole\ExitException(json_encode(['code' => $code, 'msg' => $msg]));
 }
 
@@ -65,4 +66,14 @@ function controller($controller){
     }else{
         throw new Swoole\ExitException($class . '不存在');
     }
+}
+
+# 获取请求对象
+function request(){
+    return core\Request::$request;
+}
+
+# 获取相应对象
+function response(){
+    return core\Response::$response;
 }

@@ -73,7 +73,9 @@ class Model{
     }
 
     public function delete(){
-
+        $sql = 'delete from '. $this->table . ' where ' . $this->where;
+        $res = $this->mysql->query($sql);
+        return $this->result($res);
     }
 
     public function find(){
@@ -144,6 +146,36 @@ class Model{
         $this->sql = $sql;
         $res = $this->mysql->query($sql);
         return $this->result($res);
+    }
+
+    public function buildSql(){
+        $sql = 'select';
+        if ($this->field){
+            $sql .= ' ' . $this->field . ' from ' . $this->table;
+        }else{
+            $sql .= ' * from `' . $this->table . '`';
+        }
+        if ($this->name){
+            $sql .= ' as ' . $this->name;
+        }
+        if ($this->join){
+            foreach ($this->join as $join) {
+                $sql .= ' ' . $join;
+            }
+        }
+        if ($this->where){
+            $sql .= ' where ' . $this->where;
+        }
+        if ($this->group){
+            $sql .= ' group by ' . $this->group;
+        }
+        if ($this->order){
+            $sql .= ' order by ' . $this->order;
+        }
+        if ($this->limit){
+            $sql .= ' limit ' . $this->limit;
+        }
+        return $sql;
     }
 
     public function count(){

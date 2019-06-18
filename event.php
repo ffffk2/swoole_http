@@ -9,6 +9,10 @@ $_request = function ($request, $response)use($route){
         $url = strtolower($request->server['request_uri']);
         $method = strtolower($request->server['request_method']);
         $route_method = array_merge($route['*'], $route[$method]);
+        // 加入路由传参
+        $url = explode('/', $url);
+        $param = isset($url[2])? $url[2] : '';
+        $url = '/' . $url[1];
         // 匹配
         if (array_key_exists($url, $route_method)){
             $url = $route_method[$url];
@@ -31,7 +35,11 @@ $_request = function ($request, $response)use($route){
                 if(!method_exists($obj, $action)){
                     throw new Swoole\ExitException($class . '@' . $action . '不存在');
                 }
-                $obj->$action();
+                if ($param) {
+                    $obj->$action($param);
+                }else{
+                    $obj->$action();
+                }
             } else {
                 $response->end($class . '不存在');
             }
@@ -46,7 +54,7 @@ $_WorkerStart = function($server, $worker_id){
     $config_pool = config('pool');
     foreach ($config_pool as $pool_name => $pool_class) {
         $config = config($pool_name);
-        $pool_obj = new $pool_class($config);
+        $pool_obj = new $pool_class($config, $pool_name);
         core\pool\Pool::setPool($pool_name, $pool_obj);
     }
     echo '服务启动' . PHP_EOL;
@@ -58,4 +66,3 @@ return [
     'request' => $_request,
     'WorkerStart' => $_WorkerStart
 ];
-

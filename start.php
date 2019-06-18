@@ -1,6 +1,8 @@
 <?php
 
-require_once './init.php';
+const ROOT_DIR = __DIR__ . '/';
+
+require_once ROOT_DIR . 'init.php';
 
 $server = new swoole_http_server(config('server.host'), config('server.port'));
 

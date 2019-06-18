@@ -4,19 +4,21 @@ namespace core\pool;
 
 abstract class PoolAbstract{
 	
+    protected $name;
+
 	private $config = ['max' => 100, 'min' => 20];
 	
 	private $chan;
 	
 	private $num = 0;
 	
-	public function __construct($config = []){
+	public function __construct($config = [], $name){
 		$this->config = array_merge($this->config, $config);
 		$this->chan = new \Swoole\Coroutine\Channel($this->config['max']);
 		for($i=0;$i<$this->config['min'];$i++){
 			$obj = $this->create_obj();
-			if (!$obj->connected) {
-				throw new \Swoole\ExitException('连接池连接出错');
+            if (!$obj->connected) {
+                throw new \Swoole\ExitException($name . '连接池连接出错');
 			}
 			$this->chan->push($obj);
 			$this->num++;

@@ -15,7 +15,7 @@ class Controller{
     }
 
     public function init(){}
-
+    
     public function json($data = ['' => ''], $code = 200, $msg = '成功'){
         $return = json_encode(['code' => $code, 'msg' => $msg, 'data' => $data]);
         echo date('Y-m-d H:i:s') . PHP_EOL . $return . PHP_EOL . PHP_EOL;
@@ -23,8 +23,9 @@ class Controller{
         Response::$response->end($return);
     }
 
-    public function send($return){
+    public function send($return, $code = 200){
         echo date('Y-m-d H:i:s') . PHP_EOL . $return . PHP_EOL . PHP_EOL;
+        Response::$response->status($code);
         Response::$response->end($return);
     }
 
