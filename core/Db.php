@@ -305,15 +305,15 @@ class Db{
         }
     }
 
-    public static function begin(){
+    public function begin(){
         $this->mysql->begin();
     }
 
-    public static function commit(){
+    public function commit(){
         $this->mysql->commit();
     }
 
-    public static function rollback(){
+    public function rollback(){
         $this->mysql->rollback();
     }
 }
